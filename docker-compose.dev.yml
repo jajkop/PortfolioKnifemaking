@@ -1,0 +1,70 @@
+# Tryb developerski — bez rebuildu przy każdej zmianie kodu.
+# Uruchomienie: docker compose -f docker-compose.dev.yml up
+#
+# Strona: http://localhost:5173
+# API:    http://localhost:8080
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nozestrona-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nozestrona
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d nozestrona"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    container_name: nozestrona-api-dev
+    working_dir: /src
+    command: dotnet watch run --project NozeStrona.Api.csproj --urls http://0.0.0.0:8080
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=nozestrona;Username=postgres;Password=admin
+      Jwt__Key: SuperSecretDevelopmentKey_ChangeMeInProduction_1234567890
+      Admin__Username: admin
+      Admin__Password: Admin123!
+      FileStorage__UploadPath: /src/uploads
+      Cors__Origins__0: http://localhost:5173
+      Cors__Origins__1: http://localhost:3000
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/NozeStrona.Api:/src
+      - uploads_data_dev:/src/uploads
+
+  frontend:
+    image: node:22-alpine
+    container_name: nozestrona-frontend-dev
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+
+volumes:
+  postgres_data_dev:
+  uploads_data_dev:
+  frontend_node_modules:

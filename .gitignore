@@ -1,0 +1,20 @@
+# Build
+bin/
+obj/
+dist/
+node_modules/
+
+# IDE
+.vs/
+.vscode/
+*.user
+
+# Env
+.env
+
+# Uploads (lokalnie)
+backend/NozeStrona.Api/uploads/
+
+# OS
+Thumbs.db
+.DS_Store
