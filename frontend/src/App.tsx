@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
+import ContactPage from './pages/ContactPage';
 import KnifeDetailPage from './pages/KnifeDetailPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
@@ -13,6 +14,7 @@ export default function App() {
       <Route path="admin/login" element={<AdminLoginPage />} />
       <Route element={<Layout />}>
         <Route index element={<HomePage />} />
+        <Route path="kontakt" element={<ContactPage />} />
         <Route path="noze/:id" element={<KnifeDetailPage />} />
         <Route
           path="admin"

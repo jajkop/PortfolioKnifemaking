@@ -9,11 +9,15 @@ export default function Layout() {
       <header className="site-header">
         <div className="header-inner">
           <Link to="/" className="logo">
-            Jakub Słodownik noże ręcznie robione
+            <img src="/logo.png" alt="" className="logo-mark" aria-hidden="true" />
+            <span className="logo-text">Jakub Słodownik noże ręcznie robione</span>
           </Link>
           <nav className="site-nav">
             <Link to="/" className={location.pathname === '/' ? 'active' : undefined}>
               Portfolio
+            </Link>
+            <Link to="/kontakt" className={location.pathname === '/kontakt' ? 'active' : undefined}>
+              Kontakt
             </Link>
           </nav>
         </div>
